@@ -57,6 +57,7 @@ class _SearchPageState extends State<SearchPage> {
           children: <Widget>[
             TextField(
               controller: _textController,
+              autofocus: true,
               decoration: InputDecoration(
                 hintText: "Enter Search Words",
                 suffixIcon: IconButton(
