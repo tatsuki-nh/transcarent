@@ -8,7 +8,9 @@ class SearchBloc {
   final _actionController = StreamController<void>();
   // call this to fetch next page of search result.
   nextPage() {
-    _actionController.sink.add(null);
+    if (!_actionController.isClosed) {
+      _actionController.sink.add(null);
+    }
   }
 
   final _resultController = StreamController<List<ImageResult>>();
@@ -22,27 +24,41 @@ class SearchBloc {
   // constructor
   SearchBloc(this.searchWords) {
     _actionController.stream.listen((_) {
-      // Retrieve page.
-      try {
-        final imageResults = searchImages()
-          ..then((f) {
-            // increase page count for next request.
-            _pageCount++;
-            // append result images to the list.
-            _images.addAll(f);
-            // let the listener know that new images are added.
-            _resultController.sink.add(_images);
-          });
-      } catch (_) {
-        // ignore exception for now
-      }
+      _listenNextPageRequest();
     });
   }
 
   // cleanup stream controllers
   void dispose() {
+    print('disposed BLOC');
     _actionController.close();
     _resultController.close();
+  }
+
+  void _listenNextPageRequest() async {
+    // Retrieve page.
+    try {
+      await searchImages()
+          .then((f) {
+        // increase page count for next request.
+        _pageCount++;
+        // append result images to the list.
+        _images.addAll(f);
+        // let the listener know that new images are added.
+        _resultController.sink.add(_images);
+      });
+    } on FormatException catch(ex) {
+      print("exception + ${ex.toString()}");
+      if (ex.source == 404) {
+        // No more page - close the controller so that it does not receive further request.
+        //TODO: I am not sure real server returns what error code when it reaches end of result pages.
+        // This is just for error handling in debug environment with WireMock.
+        _actionController.close();
+      }
+    } catch (error) {
+      print(error);
+      // ignore exception for now
+    }
   }
 
   // Returns an observer of asynchronous request operation
@@ -56,8 +72,7 @@ class SearchBloc {
       return SearchResult.fromJson(jsonDecode(response.body)).imageResults;
     }
     else {
-      print(response.statusCode);
-      throw Exception('Failed to search images');
+      throw FormatException('Failed to get next page', response.statusCode);
     }
   }
 }
