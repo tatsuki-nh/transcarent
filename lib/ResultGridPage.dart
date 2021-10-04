@@ -57,15 +57,18 @@ class ResultGridPageState extends State<ResultGridPage> {
       body: StreamBuilder(
         stream: _searchBloc.results,
         builder: (content, AsyncSnapshot<List<ImageResult>> snapshot) {
-          return buildGridView(snapshot);
+          if (snapshot.hasData) {
+            return buildGridView(snapshot.data!);
+          }
+          else {
+            return Center(child: CircularProgressIndicator());
+          }
         }
       ),
     );
   }
 
-  Widget buildGridView(AsyncSnapshot<List<ImageResult>> snapshot) {
-    var images = snapshot.data;
-
+  Widget buildGridView(List<ImageResult> images) {
     return GridView.builder(
       itemCount: images!.length,
       // listening scroll event
