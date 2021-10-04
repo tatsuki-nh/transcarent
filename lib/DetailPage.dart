@@ -20,14 +20,11 @@ class DetailPage extends StatelessWidget {
         title: Text('Detail'),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.download_sharp),
-            onPressed: () {
-              GallerySaver.saveImage(image.original)
-                  .then((success) {
-                    print(success);
-              });
-            }
-          ),
+              icon: const Icon(Icons.download_sharp),
+              onPressed: () {
+                saveToGallery(context);
+              }
+    ),
         ],
       ),
       body: SizedBox.expand(child:
@@ -60,7 +57,7 @@ class DetailPage extends StatelessWidget {
               // color: Colors.blue,
               // textColor: Colors.white,
               onPressed: image.link.isNotEmpty? () {
-                _launchURL();
+                launchURL();
               } : null,
             )
           ],
@@ -70,12 +67,36 @@ class DetailPage extends StatelessWidget {
     );
   }
 
+  // Save the picture to the gallery
+  void saveToGallery(BuildContext context) async {
+    try {
+      await GallerySaver.saveImage(image.original)
+          .then((success) {
+            String message = (success ?? false) ? 'Successfully saved the picture' : 'Failed to save the picture';
+            showSnackBar(message, context);
+      });
+    } catch (error) {
+      showSnackBar(error.toString(), context);
+    }
+  }
+
   // open link URL in browser app.
-  _launchURL() async {
+  void launchURL() async {
     if (await canLaunch(image.link)) {
       await launch(image.link);
     } else {
       throw 'Could not launch';
     }
+  }
+
+  // Show snackbar
+  void showSnackBar(String message, BuildContext context) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      action: null,
+    );
+
+    // Find the ScaffoldMessenger in the widget tree and use it to show a SnackBar.
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
