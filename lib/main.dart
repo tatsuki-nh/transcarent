@@ -29,12 +29,12 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  final textController = TextEditingController();
-  bool hasSearchWords = false;
+  final _textController = TextEditingController();
+  bool _hasSearchWords = false;
 
   @override
   void dispose() {
-    textController.dispose();
+    _textController.dispose();
     super.dispose();
   }
 
@@ -56,18 +56,18 @@ class _SearchPageState extends State<SearchPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             TextField(
-              controller: textController,
+              controller: _textController,
               decoration: InputDecoration(
                 hintText: "Enter Search Words",
                 suffixIcon: IconButton(
                   icon: Icon(Icons.clear),
-                  onPressed: textController.clear,
+                  onPressed: _textController.clear,
                 ),
               ),
               onChanged: (value) {
                 setState(() {
                   // ignore whitespace then check to see if there is valid words.
-                  hasSearchWords = value.replaceAll(' ', '').isNotEmpty;
+                  _hasSearchWords = value.replaceAll(' ', '').isNotEmpty;
                 });
               }
             )
@@ -77,11 +77,11 @@ class _SearchPageState extends State<SearchPage> {
             ElevatedButton(
               child: const Text('Search'),
               // set null to disable button if text field is empty
-              onPressed: hasSearchWords? () {
+              onPressed: _hasSearchWords? () {
                 // push search result page
                 Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ResultGridPage(searchWords: textController.text)),
+                    MaterialPageRoute(builder: (context) => ResultGridPage(searchWords: _textController.text)),
                 );
               } : null,
             ),
