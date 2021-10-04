@@ -70,7 +70,7 @@ class ResultGridPageState extends State<ResultGridPage> {
 
   Widget buildGridView(List<ImageResult> images) {
     return GridView.builder(
-      itemCount: images!.length,
+      itemCount: images.length,
       // listening scroll event
       controller: _scrollController,
       // Align three grids in single row
