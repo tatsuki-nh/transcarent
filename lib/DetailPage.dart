@@ -1,10 +1,13 @@
 
+import 'dart:async';
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:transcarent/SearchResult.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:gallery_saver/gallery_saver.dart';
+import 'package:image_downloader/image_downloader.dart';
 
 class DetailPage extends StatelessWidget {
   // constructor
@@ -70,11 +73,12 @@ class DetailPage extends StatelessWidget {
   // Save the picture to the gallery
   void saveToGallery(BuildContext context) async {
     try {
-      await GallerySaver.saveImage(image.original)
-          .then((success) {
-            String message = (success ?? false) ? 'Successfully saved the picture' : 'Failed to save the picture';
-            showSnackBar(message, context);
-      });
+      var imageId = await ImageDownloader.downloadImage(image.original);
+      String message = (imageId != null) ? 'Successfully saved the picture' : 'Failed to save the picture';
+
+      showSnackBar(message, context);
+    } on Exception catch (ex) {
+      showSnackBar(ex.toString(), context);
     } catch (error) {
       showSnackBar(error.toString(), context);
     }
