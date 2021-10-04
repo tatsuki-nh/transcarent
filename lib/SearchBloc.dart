@@ -5,14 +5,12 @@ import 'package:http/http.dart' as http;
 import 'package:transcarent/SearchResult.dart';
 
 class SearchBloc {
-  //
   final _actionController = StreamController<void>();
+  // call this to fetch next page of search result.
   nextPage() {
     _actionController.sink.add(null);
   }
 
-  // SINK: result of HTTP request
-  // STREAM: observed by view
   final _resultController = StreamController<List<ImageResult>>();
   Stream<List<ImageResult>> get results => _resultController.stream;
 
@@ -32,14 +30,16 @@ class SearchBloc {
             _pageCount++;
             // append result images to the list.
             _images.addAll(f);
-
             // let the listener know that new images are added.
             _resultController.sink.add(_images);
           });
-      } catch (_) {}
+      } catch (_) {
+        // ignore exception for now
+      }
     });
   }
 
+  // cleanup stream controllers
   void dispose() {
     _actionController.close();
     _resultController.close();

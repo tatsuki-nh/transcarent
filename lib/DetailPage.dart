@@ -70,6 +70,7 @@ class DetailPage extends StatelessWidget {
     );
   }
 
+  // open link URL in browser app.
   _launchURL() async {
     if (await canLaunch(image.link)) {
       await launch(image.link);
