@@ -49,8 +49,8 @@ class SearchBloc {
   Future<List<ImageResult>> searchImages() async {
     String qparam = Uri.encodeComponent(searchWords.trim());
     print(qparam);
-    // final response = await http.get(Uri.parse('https://www.nrby.com'));
-    final response = await http.get(Uri.parse('http://192.168.1.21:9000/search.json?q=$qparam&tbm=isch&ijn=$_pageCount&api_key=9432e462331348ece728502579d67164b07030f89d41c94c8047cdc406112d09'));
+    // final response = await http.get(Uri.parse('http://192.168.1.21:9000/search.json?q=$qparam&tbm=isch&ijn=$_pageCount&api_key=9432e462331348ece728502579d67164b07030f89d41c94c8047cdc406112d09'));
+    final response = await http.get(Uri.parse('http://serpapi.com/search.json?q=$qparam&tbm=isch&ijn=$_pageCount&api_key=9432e462331348ece728502579d67164b07030f89d41c94c8047cdc406112d09'));
     if (response.statusCode == 200) {
       print(response.body);
       return SearchResult.fromJson(jsonDecode(response.body)).imageResults;
